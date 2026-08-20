@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.MarketPhoneMapper">
+    <resultMap type="MarketPhone" id="MarketPhoneResult">
+        <id property="phoneId" column="phone_id" />
+        <result property="name" column="name" />
+        <result property="brand" column="brand" />
+        <result property="model" column="model" />
+        <result property="category" column="category" />
+        <result property="conditionLevel" column="condition_level" />
+        <result property="batteryHealth" column="battery_health" />
+        <result property="price" column="price" />
+        <result property="imageUrl" column="image_url" />
+        <result property="color" column="color" />
+        <result property="storage" column="storage" />
+        <result property="networkType" column="network_type" />
+        <result property="memorySize" column="memory_size" />
+        <result property="warrantyStatus" column="warranty_status" />
+        <result property="salesCount" column="sales_count" />
+        <result property="inspectionTags" column="inspection_tags" />
+        <result property="status" column="status" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <select id="selectMarketPhoneList" parameterType="MarketPhone" resultMap="MarketPhoneResult">
+        select phone_id, name, brand, model, category, condition_level, battery_health,
+               price, image_url, color, storage, network_type, memory_size,
+               warranty_status, sales_count, inspection_tags, status, create_time
+        from market_phone
+        <where>
+            status = '0'
+            <if test="name != null and name != ''">
+                and (name like concat('%', #{name}, '%')
+                     or brand like concat('%', #{name}, '%')
+                     or model like concat('%', #{name}, '%'))
+            </if>
+            <if test="brand != null and brand != ''">and brand = #{brand}</if>
+            <if test="model != null and model != ''">and model = #{model}</if>
+            <if test="category != null and category != ''">and category = #{category}</if>
+            <if test="conditionLevel != null and conditionLevel != ''">and condition_level = #{conditionLevel}</if>
+            <if test="warrantyStatus != null and warrantyStatus != ''">and warranty_status = #{warrantyStatus}</if>
+            <if test="color != null and color != ''">and color = #{color}</if>
+            <if test="storage != null and storage != ''">and storage = #{storage}</if>
+            <if test="networkType != null and networkType != ''">and network_type = #{networkType}</if>
+            <if test="memorySize != null and memorySize != ''">and memory_size = #{memorySize}</if>
+            <if test="batteryHealth != null">and battery_health &gt;= #{batteryHealth}</if>
+            <if test="params.minPrice != null">and price &gt;= #{params.minPrice}</if>
+            <if test="params.maxPrice != null">and price &lt;= #{params.maxPrice}</if>
+        </where>
+        <choose>
+            <when test="params.sort == 'priceAsc'">order by price asc, phone_id desc</when>
+            <when test="params.sort == 'priceDesc'">order by price desc, phone_id desc</when>
+            <when test="params.sort == 'sales'">order by sales_count desc, phone_id desc</when>
+            <otherwise>order by phone_id desc</otherwise>
+        </choose>
+    </select>
+</mapper>
